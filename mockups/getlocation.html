@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get Location</title>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            alert("Latitude: " + latitude + "\nLongitude: " + longitude);
+
+            // You can use latitude and longitude values here to perform further actions or send them to the server.
+        }
+    </script>
+</head>
+<body>
+    <h1>Get User Location</h1>
+    <button onclick="getLocation()">Get Location</button>
+</body>
+</html>

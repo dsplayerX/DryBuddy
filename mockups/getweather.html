@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get Weather Data</title>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(getWeatherData);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function getWeatherData(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            var apiKey = '9f1fae01e6453003ac01e42e69851278'; // Replace with your OpenWeather API key
+            var apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Process the weather data
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.log("Error:", error);
+                });
+        }
+    </script>
+</head>
+<body>
+    <h1>Get Weather Data</h1>
+    <button onclick="getLocation()">Get Weather</button>
+</body>
+</html>
