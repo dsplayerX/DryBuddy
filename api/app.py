@@ -22,16 +22,18 @@ def get_weather():
     print("latitude: ", latitude)
     print("longitude: ", longitude)
 
-    weather_url = f'https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}'
-    #forecast_url = f'https://api.openweathermap.org/data/2.5/forecast?lat={latitude}&lon={longitude}&appid={api_key}'
+    onecall_url = f"https://api.openweathermap.org/data/3.0/onecall?lat={latitude}&lon={longitude}&exclude=alerts&appid={API_KEY}"
+    response = requests.get(onecall_url)
 
-    response_weather = requests.get(weather_url)
+    onecall_data = response.json()
 
-    weather_data = response_weather.json()
-    print("weather_data: ")
-    print(weather_data)
+    print("OneCall Data: ")
+    print(onecall_data)
 
-    return jsonify(weather_data)
+    print("\n\n\n Minutely Data: ")
+    print(onecall_data["minutely"])
+
+    return jsonify(onecall_data)
 
 if __name__ == '__main__':
     app.run(port=os.getenv("PORT", default=5000), debug=True)

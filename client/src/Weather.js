@@ -21,6 +21,11 @@ const Weather = () => {
     return (kelvin - 273.15).toFixed(2);
   };
 
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp * 1000); // Multiply by 1000 to convert from seconds to milliseconds
+    return date.toLocaleString();
+  };
+
   const getCoordinates = () => {
     navigator.geolocation.getCurrentPosition((position) => {
       setLatitude(position.coords.latitude);
@@ -39,24 +44,22 @@ const Weather = () => {
       {weatherData && (
         <div>
           <h2>Current Weather</h2>
-          <p>City: {weatherData.name}</p>
-          <p>Temperature: {convertKelvinToCelsius(weatherData.main.temp)}°C</p>
-          <p>Feels Like: {convertKelvinToCelsius(weatherData.main.feels_like)}°C</p>
-          <p>Minimum Temperature: {convertKelvinToCelsius(weatherData.main.temp_min)}°C</p>
-          <p>Maximum Temperature: {convertKelvinToCelsius(weatherData.main.temp_max)}°C</p>
-          <p>Weather: {weatherData.weather[0].main}</p>
-          <p>Description: {weatherData.weather[0].description}</p>
-          <p>Humidity: {weatherData.main.humidity}%</p>
-          <p>Wind Speed: {weatherData.wind.speed}m/s</p>
-          <p>Wind Direction: {weatherData.wind.deg}°</p>
-          <p>Cloudiness: {weatherData.clouds.all}%</p>
-          <p>Pressure: {weatherData.main.pressure}hPa</p>
-          <p>Visibility: {weatherData.visibility}m</p>
-          <p>Sunrise: {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString()}</p>
-          <p>Sunset: {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString()}</p>
-          <p>Latitude: {weatherData.coord.lat}</p>
-          <p>Longitude: {weatherData.coord.lon}</p>
-          <p>Country: {weatherData.sys.country}</p>
+          <p>Temperature: {convertKelvinToCelsius(weatherData["current"]["temp"])}°C</p>
+          <p>Feels Like: {convertKelvinToCelsius(weatherData["current"]["feels_like"])}°C</p>
+          <p>Humidity: {weatherData["current"]["humidity"]}%</p>
+          <p>Wind Speed: {weatherData["current"]["wind_speed"]}m/s</p>
+          <p>Wind Direction: {weatherData["current"]["wind_deg"]}°</p>
+          <p>Cloudiness: {weatherData["current"]["clouds"]}%</p>
+          <p>Weather: {weatherData["current"]["weather"][0]["description"]}</p>
+          <h2>Minutely Precipitation</h2>
+          <ul>
+            {weatherData.minutely.map((minuteData, index) => (
+              <li key={index}>
+                <p>Timestamp: {formatTimestamp(minuteData.dt)}</p>
+                <p>Precipitation: {minuteData.precipitation} mm</p>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
