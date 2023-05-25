@@ -24,7 +24,7 @@ class DryBuddyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'DryBuddy App',
-      theme: ThemeData(primarySwatch: Colors.blueGrey),
+      theme: ThemeData(primarySwatch: Colors.teal),
       home: const WeatherHomePage(),
     );
   }
@@ -45,6 +45,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
   String _longitude = '';
   String _feelsLike = '';
   List<dynamic> _minutelyData = [];
+  String _weatherIconCode = '';
   bool _isLoading = false;
 
   @override
@@ -157,6 +158,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
         setState(() {
           _cityName = '';
           _temperature = (data["current"]["temp"] - 273.15).toStringAsFixed(2);
+          _weatherIconCode = data["current"]["weather"][0]["icon"];
           _weatherDescription = data["current"]["weather"][0]["description"];
           _latitude = data["lat"].toString();
           _longitude = data["lon"].toString();
@@ -168,6 +170,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
         setState(() {
           _cityName = '';
           _temperature = '';
+          _weatherIconCode = '';
           _weatherDescription = 'Error fetching data';
           _latitude = '';
           _longitude = '';
@@ -180,6 +183,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
       setState(() {
         _cityName = '';
         _temperature = '';
+        _weatherIconCode = '';
         _weatherDescription = 'Error fetching data';
         _latitude = '';
         _longitude = '';
@@ -197,8 +201,13 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
     setState(() {
       _cityName = '';
       _temperature = '';
+      _weatherIconCode = '';
       _weatherDescription = '';
+      _latitude = '';
+      _longitude = '';
+      _feelsLike = '';
       _isLoading = true;
+      _minutelyData = []; // New line to reset minutely data
     });
 
     _fetchWeatherData();
@@ -208,34 +217,38 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DryBuddy App'),
+        title: Text('DryBuddy App'),
         actions: [
           ElevatedButton(
             onPressed: _refreshWeatherData,
-            child: const Icon(Icons.refresh),
+            child: Icon(Icons.refresh),
           ),
         ],
       ),
+      backgroundColor: Color.fromARGB(
+          255, 156, 236, 228), // Set the background color to teal
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             _isLoading
-                ? const CircularProgressIndicator()
+                ? CircularProgressIndicator()
                 : Column(
                     children: [
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
+                      Text('City: $_cityName'),
                       Text('Temperature: $_temperature °C'),
+                      Image.network(getWeatherIconUrl(_weatherIconCode)),
                       Text('Description: $_weatherDescription'),
                       Text('Latitude: $_latitude'),
                       Text('Longitude: $_longitude'),
                       Text('Feels Like: $_feelsLike °C'),
-                      const SizedBox(height: 20),
-                      const Text('Minutely Weather Data:'),
+                      SizedBox(height: 20),
+                      Text('Minutely Weather Data:'),
                       if (_minutelyData.isNotEmpty)
                         ListView.builder(
                           shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
+                          physics: NeverScrollableScrollPhysics(),
                           itemCount: _minutelyData.length,
                           itemBuilder: (BuildContext context, int index) {
                             final data = _minutelyData[index];
@@ -255,5 +268,9 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
         ),
       ),
     );
+  }
+
+  String getWeatherIconUrl(String iconCode) {
+    return 'https://openweathermap.org/img/wn/$iconCode@2x.png';
   }
 }
