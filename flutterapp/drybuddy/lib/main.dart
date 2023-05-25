@@ -40,6 +40,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
   String _latitude = '';
   String _longitude = '';
   String _feelsLike = '';
+  List<dynamic> _minutelyData = [];
   bool _isLoading = false;
 
   @override
@@ -97,6 +98,8 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
           Position position = await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high);
           // Fetch weather data using the obtained latitude and longitude
+          print('Latitude: ${position.latitude}');
+          print('Longitude: ${position.longitude}');
           _fetchWeatherDataByLocation(position.latitude, position.longitude);
         } catch (error) {
           setState(() {
@@ -137,23 +140,25 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
   void _fetchWeatherDataByLocation(double latitude, double longitude) async {
     final apiKey = await loadApiKey();
     final apiUrl =
-        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey';
+        'https://api.openweathermap.org/data/3.0/onecall?lat=$latitude&lon=$longitude&exclude=alerts&appid=$apiKey';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
+      print(response.statusCode);
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
-        final mainData = data['main'];
-        final weatherData = data['weather'][0];
+        print(data);
 
         setState(() {
-          _cityName = data['name'];
-          _temperature = (mainData['temp'] - 273.15).toStringAsFixed(2);
-          _weatherDescription = weatherData['description'];
-          _latitude = latitude.toStringAsFixed(2);
-          _longitude = longitude.toStringAsFixed(2);
-          _feelsLike = (mainData['feels_like'] - 273.15).toStringAsFixed(2);
+          _cityName = '';
+          _temperature = (data["current"]["temp"] - 273.15).toStringAsFixed(2);
+          _weatherDescription = data["current"]["weather"][0]["description"];
+          _latitude = data["lat"].toString();
+          _longitude = data["lon"].toString();
+          _feelsLike =
+              (data["current"]['feels_like'] - 273.15).toStringAsFixed(2);
+          _minutelyData = data["minutely"]; // New line to get minutely data
         });
       } else {
         setState(() {
@@ -163,9 +168,11 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
           _latitude = '';
           _longitude = '';
           _feelsLike = '';
+          _minutelyData = []; // New line to reset minutely data
         });
       }
     } catch (error) {
+      print(error);
       setState(() {
         _cityName = '';
         _temperature = '';
@@ -173,6 +180,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
         _latitude = '';
         _longitude = '';
         _feelsLike = '';
+        _minutelyData = []; // New line to reset minutely data
       });
     }
 
@@ -204,22 +212,43 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 20),
-          _isLoading
-              ? CircularProgressIndicator()
-              : Column(
-                  children: [
-                    Text('City: $_cityName'),
-                    Text('Temperature: $_temperature °C'),
-                    Text('Description: $_weatherDescription'),
-                    Text('Latitude: $_latitude'),
-                    Text('Longitude: $_longitude'),
-                    Text('Feels Like: $_feelsLike °C'),
-                  ],
-                ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            _isLoading
+                ? CircularProgressIndicator()
+                : Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Text('Temperature: $_temperature °C'),
+                      Text('Description: $_weatherDescription'),
+                      Text('Latitude: $_latitude'),
+                      Text('Longitude: $_longitude'),
+                      Text('Feels Like: $_feelsLike °C'),
+                      SizedBox(height: 20),
+                      Text('Minutely Weather Data:'),
+                      if (_minutelyData.isNotEmpty)
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: _minutelyData.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final data = _minutelyData[index];
+                            final dt = DateTime.fromMillisecondsSinceEpoch(
+                                data['dt'] * 1000);
+                            final precipitation = data['precipitation'];
+                            return ListTile(
+                              title: Text('Time: ${dt.toLocal()}'),
+                              subtitle:
+                                  Text('Precipitation: $precipitation mm/h'),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+          ],
+        ),
       ),
     );
   }
