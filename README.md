@@ -1,12 +1,16 @@
-# DryBuddy
- DryBuddy is a simple app that notifies users when it starts to rain. This is useful for people who want to take their clothes inside before they get wet.
+# drybuddy
 
-# How to use
-Install requirements : `pip install -r requirements.txt`
+A new Flutter project.
 
-## Venv
-`python -m venv venv`
-`venv\Scripts\activate`
-`python app.py`
+## Getting Started
 
-npm i
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

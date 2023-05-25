@@ -8,7 +8,7 @@ import 'package:yaml/yaml.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(DryBuddyApp());
+  runApp(const DryBuddyApp());
 }
 
 Future<String> loadApiKey() async {
@@ -18,17 +18,21 @@ Future<String> loadApiKey() async {
 }
 
 class DryBuddyApp extends StatelessWidget {
+  const DryBuddyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'DryBuddy App',
-      theme: ThemeData(primarySwatch: Colors.amber),
-      home: WeatherHomePage(),
+      theme: ThemeData(primarySwatch: Colors.blueGrey),
+      home: const WeatherHomePage(),
     );
   }
 }
 
 class WeatherHomePage extends StatefulWidget {
+  const WeatherHomePage({super.key});
+
   @override
   _WeatherHomePageState createState() => _WeatherHomePageState();
 }
@@ -76,13 +80,13 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Location Access Denied'),
-              content:
-                  Text('Please enable location access or try again later.'),
+              title: const Text('Location Access Denied'),
+              content: const Text(
+                  'Please enable location access or try again later.'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -112,13 +116,13 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Location Access Denied'),
-                content:
-                    Text('Please enable location access or try again later.'),
+                title: const Text('Location Access Denied'),
+                content: const Text(
+                    'Please enable location access or try again later.'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('OK'),
+                    child: const Text('OK'),
                   ),
                 ],
               );
@@ -204,34 +208,34 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('DryBuddy App'),
+        title: const Text('DryBuddy App'),
         actions: [
           ElevatedButton(
             onPressed: _refreshWeatherData,
-            child: Icon(Icons.refresh),
+            child: const Icon(Icons.refresh),
           ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _isLoading
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : Column(
                     children: [
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Text('Temperature: $_temperature °C'),
                       Text('Description: $_weatherDescription'),
                       Text('Latitude: $_latitude'),
                       Text('Longitude: $_longitude'),
                       Text('Feels Like: $_feelsLike °C'),
-                      SizedBox(height: 20),
-                      Text('Minutely Weather Data:'),
+                      const SizedBox(height: 20),
+                      const Text('Minutely Weather Data:'),
                       if (_minutelyData.isNotEmpty)
                         ListView.builder(
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: _minutelyData.length,
                           itemBuilder: (BuildContext context, int index) {
                             final data = _minutelyData[index];
